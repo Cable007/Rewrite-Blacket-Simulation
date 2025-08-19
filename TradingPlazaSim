@@ -517,53 +517,49 @@
             };
             
             const TILES = [
-                { id: "grass-1", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/000000?text=Grass1", chance: 0.1 },
-                { id: "grass-2", width: 50, height: 50, image: "https://placehold.co/50x50/B5CE90/000000?text=Grass2", chance: 0.1 },
-                { id: "grass-3", width: 50, height: 50, image: "https://placehold.co/50x50/9ABF89/000000?text=Grass3", chance: 0.1 },
-                { id: "grass-4", width: 50, height: 50, image: "https://placehold.co/50x50/9FBD94/000000?text=Grass4", chance: 0.05 },
-                { id: "grass-5", width: 50, height: 50, image: "https://placehold.co/50x50/93AF84/000000?text=Grass5", chance: 0.01 },
-                { id: "grass-6", width: 50, height: 50, image: "https://placehold.co/50x50/8BA87C/000000?text=Grass6", chance: 0.0025 },
-                { id: "grass-7", width: 50, height: 50, image: "https://placehold.co/50x50/B6D39E/000000?text=Grass7", chance: 0.02 },
-
-                { id: "sand-1", width: 50, height: 50, image: "https://placehold.co/50x50/D0BF88/000000?text=Sand1", chance: 0.1 },
-                { id: "sand-2", width: 50, height: 50, image: "https://placehold.co/50x50/D2C18D/000000?text=Sand2", chance: 0.01 },
-                { id: "sand-3", width: 50, height: 50, image: "https://placehold.co/50x50/D6C492/000000?text=Sand3", chance: 0.02 },
-                { id: "sand-4", width: 50, height: 50, image: "https://placehold.co/50x50/E1D5AC/000000?text=Sand4", chance: 0.05 },
-
-                { id: "transition-corner-1", width: 50, height: 50, image: "https://placehold.co/50x50/D0BF88/000000?text=Transition" },
-                { id: "transition-corner-2", width: 50, height: 50, image: "https://placehold.co/50x50/D0BF88/000000?text=Transition" },
-
-                { id: "transition-horizontal-1", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-horizontal-2", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-horizontal-3", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-horizontal-4", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-horizontal-5", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-
-                { id: "transition-vertical-1", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-vertical-2", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-vertical-3", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-vertical-4", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-vertical-5", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-vertical-6", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-vertical-7", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-                { id: "transition-vertical-8", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
-
-                { id: "water", width: 50, height: 50, image: "https://placehold.co/50x50/81A1C1/000000?text=Water" },
+                { id: "grass-1", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/grass-1.png", chance: 0.1 },
+                { id: "grass-2", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/grass-2.png", chance: 0.1 },
+                { id: "grass-3", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/grass-3.png", chance: 0.1 },
+                { id: "grass-4", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/grass-4.png", chance: 0.05 },
+                { id: "grass-5", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/grass-5.png", chance: 0.01 },
+                { id: "grass-6", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/grass-6.png", chance: 0.0025 },
+                { id: "grass-7", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/grass-7.png", chance: 0.02 },
+            
+                { id: "sand-1", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/sand-1.png", chance: 0.1 },
+                { id: "sand-2", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/sand-2.png", chance: 0.01 },
+                { id: "sand-3", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/sand-3.png", chance: 0.02 },
+                { id: "sand-4", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/sand-4.png", chance: 0.05 },
+            
+                { id: "transition-corner-1", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-corner-1.png" },
+                { id: "transition-corner-2", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-corner-2.png" },
+            
+                { id: "transition-horizontal-1", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-horizontal-1.png" },
+                { id: "transition-horizontal-2", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-horizontal-2.png" },
+                { id: "transition-horizontal-3", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-horizontal-3.png" },
+                { id: "transition-horizontal-4", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-horizontal-4.png" },
+                { id: "transition-horizontal-5", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-horizontal-5.png" },
+            
+                { id: "transition-vertical-1", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-vertical-1.png" },
+                { id: "transition-vertical-2", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-vertical-2.png" },
+                { id: "transition-vertical-3", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-vertical-3.png" },
+                { id: "transition-vertical-4", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-vertical-4.png" },
+                { id: "transition-vertical-5", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-vertical-5.png" },
+                { id: "transition-vertical-6", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-vertical-6.png" },
+                { id: "transition-vertical-7", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-vertical-7.png" },
+                { id: "transition-vertical-8", width: 50, height: 50, image: "https://dev.blacket.org/media/content/trading-plaza/transition-vertical-8.png" },
                 
-                { id: "tree", width: 100, height: 100, image: "https://placehold.co/100x100/A3BE8C/000000?text=Tree" },
-                { id: "palm-tree", width: 100, height: 100, image: "https://placehold.co/100x100/D0BF88/000000?text=Palm" },
-                { id: "pine-tree", width: 100, height: 100, image: "https://placehold.co/100x100/5E81AC/000000?text=Pine" },
-
-                { id: "spawn", width: 500, height: 500, image: "https://placehold.co/500x500/5E81AC/FFFFFF?text=Spawn+Plaza" },
-                { id: "spawn-ring", width: 1000, height: 1000, image: "https://placehold.co/1000x1000/81A1C1/FFFFFF?text=Spawn+Ring" },
-
-                { id: "bridge", width: 200, height: 200, image: "https://placehold.co/200x200/B48EAD/000000?text=Bridge" }
+                { id: "water", width: 50, height: 50, image: "https://placehold.co/50x50/81A1C1/000000?text=Water" },
+            
+                { id: "tree", width: 100, height: 100, image: "https://dev.blacket.org/media/content/trading-plaza/tree.png" },
+                { id: "palm-tree", width: 100, height: 100, image: "https://dev.blacket.org/media/content/trading-plaza/palm-tree.png" },
+                { id: "pine-tree", width: 100, height: 100, image: "https://dev.blacket.org/media/content/trading-plaza/pine-tree.png" },
+            
+                { id: "spawn", width: 500, height: 500, image: "https://dev.blacket.org/media/content/trading-plaza/spawn.png" },
+                { id: "spawn-ring", width: 1000, height: 1000, image: "https://dev.blacket.org/media/content/trading-plaza/spawn-ring.png" },
+            
+                { id: "bridge", width: 200, height: 200, image: "https://dev.blacket.org/media/content/trading-plaza/bridge.png" }
             ];
             
-            window.constructCDNUrl = (path) => {
-                return path; // Use the direct placeholder URL
-            };
-
             let player = null;
             const collisionObjects = [];
 
@@ -589,7 +585,6 @@
 
                     const spawnCenterX = plazaWidth / 2;
                     const spawnCenterY = plazaHeight / 2;
-                    const spawnRadius = 300;
                     const sandIslandSize = 10;
                     const sandIslandX = Math.floor(gridCols / 2) - Math.floor(sandIslandSize / 2);
                     const sandIslandY = Math.floor(gridRows / 2) - Math.floor(sandIslandSize / 2);
@@ -638,7 +633,7 @@
                                             z: -0.5,
                                             width: bridgeTile.width,
                                             height: bridgeTile.height,
-                                            image: await urlToImage(window.constructCDNUrl(bridgeTile.image)),
+                                            image: await urlToImage(bridgeTile.image),
                                             hasCollision: true
                                         });
                                         collisionObjects.push(bridgeObj);
@@ -664,7 +659,7 @@
                                 z: -2,
                                 width: tile.width,
                                 height: tile.height,
-                                image: await urlToImage(window.constructCDNUrl(tile.image)),
+                                image: await urlToImage(tile.image),
                                 type: biome
                             });
 
@@ -724,7 +719,7 @@
                                     z: -0.5,
                                     width: objectTile.width,
                                     height: objectTile.height,
-                                    image: await urlToImage(window.constructCDNUrl(objectTile.image)),
+                                    image: await urlToImage(objectTile.image),
                                     hasCollision: true
                                 });
                                 collisionObjects.push(treeObj);
@@ -732,9 +727,9 @@
                         }
                     }
                     
-                    const spawnPlazaImage = await urlToImage(window.constructCDNUrl(spawnPlaza.image));
-                    const spawnRingImage = await urlToImage(window.constructCDNUrl(spawnRing.image));
-                    const playerImage = await urlToImage("https://placehold.co/100x100/3B4252/D8DEE9?text=Player");
+                    const spawnPlazaImage = await urlToImage(spawnPlaza.image);
+                    const spawnRingImage = await urlToImage(spawnRing.image);
+                    const playerImage = await urlToImage("https://blacket.org/content/blooks/Default.webp");
 
                     createObject({
                         id: generateId(),
