@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Plaza Generation Simulation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #2e3440;
+            color: #eceff4;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #eceff4;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            width: 100vw;
+            height: 100vh;
+            cursor: pointer;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .info p {
+            margin: 5px 0;
+        }
+
+        .info .highlight {
+            color: #88c0d0;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            background-color: #00000000;
+            color: #eceff4;
+            border: none;
+            
+        }
+
+        .btn:hover {
+            background-color: #81a1c1;
+            transform: translateY(-2px);
+        }
+
+        .debug-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 1rem;
+            color: #eceff4;
+            text-align: left;
+            padding: 10px;
+        }
+
+        .debug-info p {
+            margin: 0;
+        }
+
+        .top-left-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1rem;
+            color: #eceff4;
+            text-align: left;
+            padding: 10px;
+        }
+        
+        .top-right-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1rem;
+            color: #eceff4;
+            text-align: right;
+            padding: 10px;
+        }
+        
+        .top-right-info p {
+            margin: 0;
+        }
+
+        .mobile-controls {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .joystick-container {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .joystick-handle {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            touch-action: none;
+        }
+        
+        .action-button {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(46, 52, 64, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #eceff4;
+            font-size: 2rem;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .reset-notification {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(69, 78, 93, 0.9);
+            color: #a3be8c;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: none;
+            z-index: 100;
+        }
+
+    </style>
+</head>
+<body style="overflow: hidden;">
+    <div class="container">
+        <canvas id="gameCanvas" tabindex="0"></canvas>
+        <div id="loadingOverlay" class="loading-overlay">
+            <p>Loading...</p>
+        </div>
+        <div id="resetNotification" class="reset-notification">Game Reset!</div>
+        <div class="debug-info">
+            <p>Coordinates: <span id="coordinates">0.0, 0.0</span></p>
+            <p>Camera: <span id="cameraCoords">0, 0</span></p>
+            <p>Objects: <span id="objectCount">0</span></p>
+            <p>Entities: <span id="entityCount">0</span></p>
+            <p>Tile Name Display: <span id="tileNameDisplayStatus">Off</span></p>
+            <p>Chance Display: <span id="chanceDisplayStatus">Off</span></p>
+        </div>
+        <div class="top-left-info">
+            <p>Connected to Trading Plaza</p>
+            <p>Ping: 0ms</p>
+        </div>
+        <div class="top-right-info">
+            <p>FPS: <span id="fpsCount">0</span></p>
+        </div>
+        <div class="mobile-controls">
+            <div class="joystick-container">
+                <div id="joystick" class="joystick-handle"></div>
+            </div>
+            <div id="actionButton" class="action-button">
+                <span>🏃</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            let camera = { x: 0, y: 0, scale: 1.0, targetScale: 1.0 };
+            const pressing = {};
+            const mousePosition = { x: 0, y: 0 };
+            const objects = [];
+            const entities = [];
+            const layerCanvases = {};
+            const deletionQueue = [];
+            const _cachedImages = new Map();
+            const frameData = { lastTime: 0, fps: 0, frameRate: 0, deltaTime: 0 };
+            const targetFrameRate = 60;
+            let animationFrameId = null;
+            let showChance = false;
+            let showTileName = false;
+
+            const coordinatesElem = document.getElementById('coordinates');
+            const cameraCoordsElem = document.getElementById('cameraCoords');
+            const objectCountElem = document.getElementById('objectCount');
+            const entityCountElem = document.getElementById('entityCount');
+            const fpsCountElem = document.getElementById('fpsCount');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const resetNotification = document.getElementById('resetNotification');
+            const chanceDisplayStatusElem = document.getElementById('chanceDisplayStatus');
+            const tileNameDisplayStatusElem = document.getElementById('tileNameDisplayStatus');
+
+            const getWidth = () => canvas.width;
+            const getHeight = () => canvas.height;
+
+            const getLayerCtx = (z) => {
+                if (!layerCanvases[z]) {
+                    if (getWidth() > 0 && getHeight() > 0) {
+                        layerCanvases[z] = new OffscreenCanvas(getWidth(), getHeight());
+                    } else {
+                        return null;
+                    }
+                }
+                const layerCanvas = layerCanvases[z];
+                const layerCtx = layerCanvas.getContext("2d");
+                return layerCtx;
+            };
+
+            const isColliding = (object1, object2) => {
+                if (!object1.hasCollision || !object2.hasCollision) return false;
+                // Simplified AABB collision check
+                return (
+                    object1.x < object2.x + object2.width &&
+                    object1.x + object1.width > object2.x &&
+                    object1.y < object2.y + object2.height &&
+                    object1.y + object1.height > object2.y
+                );
+            };
+
+            const isMouseOver = (object) => {
+                const mouseWorldX = (mousePosition.x - (object.x - camera.x) * camera.scale) / camera.scale + camera.x;
+                const mouseWorldY = (mousePosition.y - (object.y - camera.y) * camera.scale) / camera.scale + camera.y;
+                
+                const objWidth = object.width ?? object?.image?.width ?? 0;
+                const objHeight = object.height ?? object?.image?.height ?? 0;
+                
+                return mousePosition.x >= object.x && mousePosition.x <= object.x + objWidth && mousePosition.y >= object.y && mousePosition.y <= object.y + objHeight;
+            };
+
+            const isOnScreen = (x, y, w, h) => (
+                x + w >= camera.x &&
+                x <= camera.x + getWidth() / camera.scale &&
+                y + h >= camera.y &&
+                y <= camera.y + getHeight() / camera.scale
+            );
+
+            const urlToImage = (url) => new Promise((resolve, reject) => {
+                if (_cachedImages.has(url)) return resolve(_cachedImages.get(url));
+                const image = new Image();
+                image.src = url;
+                image.onload = () => {
+                    _cachedImages.set(url, image);
+                    resolve(image);
+                };
+                image.onerror = (e) => {
+                    console.error("Failed to load image:", url, e);
+                    reject(e);
+                }
+            });
+
+            const drawImage = (image) => {
+                const imageCtx = getLayerCtx(image.z);
+                if (!imageCtx) return;
+                try {
+                    imageCtx.save();
+                    if (typeof image.useCamera === "undefined") image.useCamera = true;
+                    if (image.rotation) {
+                        imageCtx.translate(
+                            (image.x - camera.x) * camera.scale + image.width * camera.scale / 2,
+                            (image.y - camera.y) * camera.scale + image.height * camera.scale / 2
+                        );
+                        imageCtx.rotate(image.rotation * Math.PI / 180);
+                        imageCtx.translate(
+                            -(image.x - camera.x) * camera.scale - image.width * camera.scale / 2,
+                            -(image.y - camera.y) * camera.scale - image.height * camera.scale / 2
+                        );
+                    }
+                    if (image.blendMode) imageCtx.globalCompositeOperation = image.blendMode;
+                    if (image.opacity) imageCtx.globalAlpha = image.opacity;
+                    if (image.useCamera && isOnScreen(image.x, image.y, image.width, image.height)) {
+                        imageCtx.drawImage(
+                            image.image,
+                            (image.x - camera.x) * camera.scale,
+                            (image.y - camera.y) * camera.scale,
+                            image.width * camera.scale,
+                            image.height * camera.scale
+                        );
+                    } else if (!image.useCamera) {
+                        imageCtx.drawImage(
+                            image.image,
+                            image.x,
+                            image.y,
+                            image.width,
+                            image.height
+                        );
+                    }
+                    if (image.tint) {
+                        imageCtx.fillStyle = image.tint;
+                        imageCtx.globalAlpha = 0.5;
+                        imageCtx.globalCompositeOperation = "source-atop";
+                        rectCtx.fillRect(
+                            (image.x - camera.x) * camera.scale,
+                            (image.y - camera.y) * camera.scale,
+                            image.width * camera.scale,
+                            image.height * camera.scale
+                        );
+                    }
+                    imageCtx.restore();
+                } catch (e) {
+                    console.error("Error drawing image:", e);
+                }
+            };
+
+            const drawRect = (rect) => {
+                const rectCtx = getLayerCtx(rect.z);
+                if (!rectCtx) return;
+                try {
+                    rectCtx.save();
+                    rectCtx.fillStyle = rect.color;
+                    rectCtx.fillRect(
+                        (rect.x - camera.x) * camera.scale,
+                        (rect.y - camera.y) * camera.scale,
+                        rect.width * camera.scale,
+                        rect.height * camera.scale
+                    );
+                    rectCtx.restore();
+                } catch (e) {
+                    console.error("Error drawing rect:", e);
+                }
+            };
+
+            const drawText = (text) => {
+                const textCtx = getLayerCtx(text.z);
+                if (!textCtx) return;
+                try {
+                    textCtx.save();
+                    textCtx.font = `${(text.style?.fontSize ?? 15) * (text.useCamera ? camera.scale : 1)}px ${text.style?.fontFamily ?? "Inter"}`;
+                    textCtx.fillStyle = text.style?.color ?? "white";
+                    textCtx.textAlign = text.style?.textAlign ?? "left";
+                    textCtx.globalAlpha = text.opacity ?? 1;
+                    if (typeof text.useCamera === "undefined") text.useCamera = true;
+                    if (text.useCamera && isOnScreen(text.x, text.y, 0, 0)) {
+                        textCtx.fillText(text.text, (text.x - camera.x) * camera.scale, (text.y - camera.y) * camera.scale);
+                    } else if (!text.useCamera) {
+                        textCtx.fillText(text.text, text.x, text.y);
+                    }
+                    textCtx.restore();
+                } catch (e) {
+                    console.error("Error drawing text:", e);
+                }
+            };
+            
+            const createObject = (object) => {
+                object.destroy = () => deletionQueue.push(object);
+                objects.push(object);
+                return object;
+            };
+
+            const createEntity = (entity) => {
+                entity.destroy = () => {
+                    const index = entities.findIndex(e => e.id === entity.id);
+                    if (index !== -1) entities.splice(index, 1);
+                };
+                entities.push(entity);
+                return entity;
+            };
+
+            const destroyAll = () => {
+                objects.length = 0;
+                entities.length = 0;
+                collisionObjects.length = 0;
+                Object.values(layerCanvases).forEach(layer => layer.getContext('2d').clearRect(0, 0, getWidth(), getHeight()));
+            };
+
+            const showResetNotification = () => {
+                resetNotification.style.display = 'block';
+                setTimeout(() => {
+                    resetNotification.style.display = 'none';
+                }, 1000);
+            };
+
+            const frame = (time) => {
+                if (deletionQueue.length > 0) {
+                    const objectsToDelete = new Set(deletionQueue);
+                    objects.current = objects.filter(obj => !objectsToDelete.has(obj));
+                    deletionQueue.length = 0;
+                }
+
+                if (frameData.lastTime === 0) frameData.lastTime = time;
+                frameData.deltaTime = Math.min(1000 / 60, time - frameData.lastTime) / 1000 * targetFrameRate;
+                frameData.fps = Math.round(1000 / (time - frameData.lastTime));
+                frameData.lastTime = time;
+
+                ctx.clearRect(0, 0, getWidth(), getHeight());
+
+                [...objects, ...entities].forEach(item => {
+                    if (item.onFrame) item.onFrame(item, frameData.deltaTime);
+                    if (item.image) {
+                        drawImage(item);
+                    } else if (item.color) {
+                        drawRect(item);
+                    } else if (item.text) {
+                        drawText(item);
+                    }
+                });
+
+                const sortedLayers = Object.keys(layerCanvases).map(Number).sort((a, b) => a - b);
+                for (const layer of sortedLayers) {
+                    const layerCanvas = layerCanvases[layer];
+                    if (layerCanvas) {
+                        try {
+                             ctx.drawImage(layerCanvas, 0, 0);
+                             layerCanvas.getContext("2d").clearRect(0, 0, layerCanvas.width, layerCanvas.height);
+                        } catch(e) {
+                             console.error("Error drawing layer to main canvas:", e);
+                        }
+                    }
+                }
+
+                if (player) {
+                    coordinatesElem.textContent = `${player.x.toFixed(1)}, ${player.y.toFixed(1)}`;
+                }
+                cameraCoordsElem.textContent = `${Math.round(camera.x)}, ${Math.round(camera.y)}`;
+                objectCountElem.textContent = objects.length;
+                entityCountElem.textContent = entities.length;
+                fpsCountElem.textContent = frameData.fps;
+
+                tileNameDisplayStatusElem.textContent = showTileName ? 'On' : 'Off';
+                chanceDisplayStatusElem.textContent = showChance ? 'On' : 'Off';
+
+                animationFrameId = requestAnimationFrame(frame);
+            };
+
+            const handleResize = () => {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+                Object.keys(layerCanvases).forEach(z => {
+                    const oldCanvas = layerCanvases[z];
+                    if (canvas.width > 0 && canvas.height > 0) {
+                        const newCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+                        layerCanvases[z] = newCanvas;
+                    }
+                });
+            };
+
+            const handleKeyDown = (e) => { 
+                pressing[e.key.toLowerCase()] = true; 
+                if (e.key.toLowerCase() === 'r' && e.ctrlKey && e.altKey) {
+                    e.preventDefault();
+                    showResetNotification();
+                    destroyAll();
+                    init();
+                }
+                if (e.key.toLowerCase() === 'd' && e.ctrlKey && e.altKey) {
+                    showChance = !showChance;
+                }
+                if (e.key.toLowerCase() === 'n' && e.ctrlKey && e.altKey) {
+                    showTileName = !showTileName;
+                }
+            };
+            const handleKeyUp = (e) => { delete pressing[e.key.toLowerCase()]; };
+            
+            const handleMouseMove = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mousePosition.x = (e.clientX - rect.left) / camera.scale + camera.x;
+                mousePosition.y = (e.clientY - rect.top) / camera.scale + camera.y;
+            };
+            
+            const TILES = [
+                { id: "grass-1", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/000000?text=Grass1", chance: 0.1 },
+                { id: "grass-2", width: 50, height: 50, image: "https://placehold.co/50x50/B5CE90/000000?text=Grass2", chance: 0.1 },
+                { id: "grass-3", width: 50, height: 50, image: "https://placehold.co/50x50/9ABF89/000000?text=Grass3", chance: 0.1 },
+                { id: "grass-4", width: 50, height: 50, image: "https://placehold.co/50x50/9FBD94/000000?text=Grass4", chance: 0.05 },
+                { id: "grass-5", width: 50, height: 50, image: "https://placehold.co/50x50/93AF84/000000?text=Grass5", chance: 0.01 },
+                { id: "grass-6", width: 50, height: 50, image: "https://placehold.co/50x50/8BA87C/000000?text=Grass6", chance: 0.0025 },
+                { id: "grass-7", width: 50, height: 50, image: "https://placehold.co/50x50/B6D39E/000000?text=Grass7", chance: 0.02 },
+
+                { id: "sand-1", width: 50, height: 50, image: "https://placehold.co/50x50/D0BF88/000000?text=Sand1", chance: 0.1 },
+                { id: "sand-2", width: 50, height: 50, image: "https://placehold.co/50x50/D2C18D/000000?text=Sand2", chance: 0.01 },
+                { id: "sand-3", width: 50, height: 50, image: "https://placehold.co/50x50/D6C492/000000?text=Sand3", chance: 0.02 },
+                { id: "sand-4", width: 50, height: 50, image: "https://placehold.co/50x50/E1D5AC/000000?text=Sand4", chance: 0.05 },
+
+                { id: "transition-corner-1", width: 50, height: 50, image: "https://placehold.co/50x50/D0BF88/000000?text=Transition" },
+                { id: "transition-corner-2", width: 50, height: 50, image: "https://placehold.co/50x50/D0BF88/000000?text=Transition" },
+
+                { id: "transition-horizontal-1", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-horizontal-2", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-horizontal-3", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-horizontal-4", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-horizontal-5", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+
+                { id: "transition-vertical-1", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-vertical-2", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-vertical-3", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-vertical-4", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-vertical-5", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-vertical-6", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-vertical-7", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+                { id: "transition-vertical-8", width: 50, height: 50, image: "https://placehold.co/50x50/A3BE8C/D0BF88?text=Grass/Sand" },
+
+                { id: "water", width: 50, height: 50, image: "https://placehold.co/50x50/81A1C1/000000?text=Water" },
+                
+                { id: "tree", width: 100, height: 100, image: "https://placehold.co/100x100/A3BE8C/000000?text=Tree" },
+                { id: "palm-tree", width: 100, height: 100, image: "https://placehold.co/100x100/D0BF88/000000?text=Palm" },
+                { id: "pine-tree", width: 100, height: 100, image: "https://placehold.co/100x100/5E81AC/000000?text=Pine" },
+
+                { id: "spawn", width: 500, height: 500, image: "https://placehold.co/500x500/5E81AC/FFFFFF?text=Spawn+Plaza" },
+                { id: "spawn-ring", width: 1000, height: 1000, image: "https://placehold.co/1000x1000/81A1C1/FFFFFF?text=Spawn+Ring" },
+
+                { id: "bridge", width: 200, height: 200, image: "https://placehold.co/200x200/B48EAD/000000?text=Bridge" }
+            ];
+            
+            window.constructCDNUrl = (path) => {
+                return path; // Use the direct placeholder URL
+            };
+
+            let player = null;
+            const collisionObjects = [];
+
+            const init = async () => {
+                try {
+                    let idCounter = 0;
+                    const generateId = () => `entity-${idCounter++}`;
+                    
+                    const tileSize = 50;
+                    const plazaWidth = 4000;
+                    const plazaHeight = 4000;
+                    const gridRows = Math.floor(plazaHeight / tileSize);
+                    const gridCols = Math.floor(plazaWidth / tileSize);
+                    
+                    const grassTiles = TILES.filter(t => t.id.startsWith("grass"));
+                    const sandTiles = TILES.filter(t => t.id.startsWith("sand"));
+                    const waterTile = TILES.find(t => t.id === "water");
+                    const treeTiles = TILES.filter(t => t.id.includes("tree"));
+                    const bridgeTile = TILES.find(t => t.id === "bridge");
+
+                    const spawnRing = TILES.find(t => t.id === "spawn-ring");
+                    const spawnPlaza = TILES.find(t => t.id === "spawn");
+
+                    const spawnCenterX = plazaWidth / 2;
+                    const spawnCenterY = plazaHeight / 2;
+                    const spawnRadius = 300;
+                    const sandIslandSize = 10;
+                    const sandIslandX = Math.floor(gridCols / 2) - Math.floor(sandIslandSize / 2);
+                    const sandIslandY = Math.floor(gridRows / 2) - Math.floor(sandIslandSize / 2);
+
+                    const mapGrid = Array.from({ length: gridRows }, () => Array(gridCols).fill('grass'));
+
+                    // Define biomes and water
+                    for (let r = 0; r < gridRows; r++) {
+                        for (let c = 0; c < gridCols; c++) {
+                            // Check if it's within the sand island area
+                            if (c >= sandIslandX && c < sandIslandX + sandIslandSize && r >= sandIslandY && r < sandIslandY + sandIslandSize) {
+                                mapGrid[r][c] = 'sand';
+                            }
+                            
+                            // Add a river
+                            if (r > 10 && r < 12) {
+                                mapGrid[r][c] = 'water';
+                            }
+                        }
+                    }
+
+                    // Generate tiles based on the biome map
+                    for (let row = 0; row < gridRows; row++) {
+                        for (let col = 0; col < gridCols; col++) {
+                            const tileX = col * tileSize;
+                            const tileY = row * tileSize;
+
+                            let tile;
+                            const biome = mapGrid[row][col];
+                            const neighbors = {
+                                up: mapGrid[row - 1]?.[col],
+                                down: mapGrid[row + 1]?.[col],
+                                left: mapGrid[row]?.[col - 1],
+                                right: mapGrid[row]?.[col + 1]
+                            };
+
+                            if (biome === 'water') {
+                                tile = waterTile;
+                                // Add bridge for transition
+                                if (neighbors.up !== 'water' || neighbors.down !== 'water') {
+                                    if (col % 5 === 0) {
+                                        const bridgeObj = createObject({
+                                            id: `bridge-${row}-${col}`,
+                                            x: tileX - (bridgeTile.width - tileSize) / 2,
+                                            y: tileY - (bridgeTile.height - tileSize) / 2,
+                                            z: -0.5,
+                                            width: bridgeTile.width,
+                                            height: bridgeTile.height,
+                                            image: await urlToImage(window.constructCDNUrl(bridgeTile.image)),
+                                            hasCollision: true
+                                        });
+                                        collisionObjects.push(bridgeObj);
+                                    }
+                                }
+                            } else if (biome === 'sand') {
+                                tile = sandTiles[Math.floor(Math.random() * sandTiles.length)];
+                            } else if (biome === 'grass') {
+                                // Transition logic
+                                if (neighbors.up === 'sand' || neighbors.down === 'sand' || neighbors.left === 'sand' || neighbors.right === 'sand') {
+                                    // Simple transition logic
+                                    tile = TILES.find(t => t.id === 'transition-horizontal-1');
+                                } else {
+                                    tile = grassTiles[Math.floor(Math.random() * grassTiles.length)];
+                                }
+                            }
+
+                            // Create the tile object
+                            const tileObj = createObject({
+                                id: `${tile.id}-${col}-${row}`,
+                                x: tileX,
+                                y: tileY,
+                                z: -2,
+                                width: tile.width,
+                                height: tile.height,
+                                image: await urlToImage(window.constructCDNUrl(tile.image)),
+                                type: biome
+                            });
+
+                            const textColor = tile.id.startsWith('sand') || tile.id.startsWith('transition') ? '#000000' : '#eceff4';
+                            createObject({
+                                id: `name-text-${col}-${row}`,
+                                text: tile.id,
+                                x: tileX + tile.width / 2,
+                                y: tileY + 10,
+                                z: -1,
+                                opacity: 0,
+                                style: {
+                                    color: textColor,
+                                    fontSize: 12,
+                                    textAlign: "center"
+                                },
+                                onFrame: (textObj, dt) => {
+                                    textObj.opacity = showTileName ? 1 : 0;
+                                }
+                            });
+
+                            if (tile.chance) {
+                                createObject({
+                                    id: `chance-text-${col}-${row}`,
+                                    text: `${(tile.chance * 100).toFixed(2)}%`,
+                                    x: tileX + tile.width / 2,
+                                    y: tileY + 25,
+                                    z: -1,
+                                    opacity: 0,
+                                    style: {
+                                        color: textColor,
+                                        fontSize: 12,
+                                        textAlign: "center"
+                                    },
+                                    onFrame: (textObj, dt) => {
+                                        textObj.opacity = showChance ? 1 : 0;
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    // Add props (trees) with collision
+                    for (let row = 0; row < gridRows; row++) {
+                        for (let col = 0; col < gridCols; col++) {
+                            const tileX = col * tileSize;
+                            const tileY = row * tileSize;
+
+                            // Only place trees on grass and sand
+                            const biome = mapGrid[row][col];
+                            if (biome !== 'water' && Math.random() < 0.005) {
+                                const objectTile = treeTiles[Math.floor(Math.random() * treeTiles.length)];
+                                const treeObj = createObject({
+                                    id: generateId(),
+                                    x: tileX + (tileSize - objectTile.width) / 2,
+                                    y: tileY + (tileSize - objectTile.height) / 2,
+                                    z: -0.5,
+                                    width: objectTile.width,
+                                    height: objectTile.height,
+                                    image: await urlToImage(window.constructCDNUrl(objectTile.image)),
+                                    hasCollision: true
+                                });
+                                collisionObjects.push(treeObj);
+                            }
+                        }
+                    }
+                    
+                    const spawnPlazaImage = await urlToImage(window.constructCDNUrl(spawnPlaza.image));
+                    const spawnRingImage = await urlToImage(window.constructCDNUrl(spawnRing.image));
+                    const playerImage = await urlToImage("https://placehold.co/100x100/3B4252/D8DEE9?text=Player");
+
+                    createObject({
+                        id: generateId(),
+                        x: spawnCenterX - spawnPlaza.width / 2,
+                        y: spawnCenterY - spawnPlaza.height / 2,
+                        z: -1,
+                        width: spawnPlaza.width,
+                        height: spawnPlaza.height,
+                        image: spawnPlazaImage,
+                    });
+
+                    createObject({
+                        id: generateId(),
+                        x: spawnCenterX - spawnRing.width / 2,
+                        y: spawnCenterY - spawnRing.height / 2,
+                        z: -1,
+                        width: spawnRing.width,
+                        height: spawnRing.height,
+                        image: spawnRingImage,
+                    });
+
+                    const playerWidth = 100;
+                    const playerHeight = playerWidth * (playerImage.height / playerImage.width);
+
+                    player = createEntity({
+                        id: generateId(),
+                        x: spawnCenterX,
+                        y: spawnCenterY,
+                        z: 0,
+                        image: playerImage,
+                        width: playerWidth,
+                        height: playerHeight,
+                        rotation: 0,
+                        hasCollision: true,
+                        onFrame: (ent, dt) => {
+                            const speed = 5;
+                            const oldX = ent.x;
+                            const oldY = ent.y;
+
+                            if (pressing['arrowleft']) ent.x -= speed;
+                            if (pressing['arrowright']) ent.x += speed;
+                            if (pressing['arrowup']) ent.y -= speed;
+                            if (pressing['arrowdown']) ent.y += speed;
+                            
+                            // Collision detection
+                            for (const obj of collisionObjects) {
+                                if (isColliding(ent, obj)) {
+                                    ent.x = oldX;
+                                    ent.y = oldY;
+                                }
+                            }
+
+                            camera.x = ent.x - getWidth() / 2 / camera.scale;
+                            camera.y = ent.y - getHeight() / 2 / camera.scale;
+                        }
+                    });
+
+                    loadingOverlay.style.display = 'none';
+                } catch (e) {
+                    console.error("Game initialization failed:", e);
+                    loadingOverlay.innerHTML = `<p style="color: red;">Failed to load game. Please check the console for errors.</p>`;
+                }
+            };
+            
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('keyup', handleKeyUp);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            
+            const startApp = async () => {
+                handleResize();
+                await init();
+                animationFrameId = requestAnimationFrame(frame);
+            };
+
+            startApp();
+        };
+    </script>
+</body>
+</html>
