@@ -582,6 +582,10 @@
 
                     const spawnRing = TILES.find(t => t.id === "spawn-ring");
                     const spawnPlaza = TILES.find(t => t.id === "spawn");
+                    const cornerTransitions = TILES.filter(t => t.id.startsWith("transition-corner"));
+                    const horizontalTransitions = TILES.filter(t => t.id.startsWith("transition-horizontal"));
+                    const verticalTransitions = TILES.filter(t => t.id.startsWith("transition-vertical"));
+
 
                     const spawnCenterX = plazaWidth / 2;
                     const spawnCenterY = plazaHeight / 2;
@@ -642,11 +646,21 @@
                             } else if (biome === 'sand') {
                                 tile = sandTiles[Math.floor(Math.random() * sandTiles.length)];
                             } else if (biome === 'grass') {
-                                // Transition logic
-                                if (neighbors.up === 'sand' || neighbors.down === 'sand' || neighbors.left === 'sand' || neighbors.right === 'sand') {
-                                    // Simple transition logic
-                                    tile = TILES.find(t => t.id === 'transition-horizontal-1');
+                                // Check for transitions to a different biome (e.g., sand)
+                                const isVerticalTransition = (neighbors.left === 'sand' && neighbors.right !== 'sand') || (neighbors.right === 'sand' && neighbors.left !== 'sand');
+                                const isHorizontalTransition = (neighbors.up === 'sand' && neighbors.down !== 'sand') || (neighbors.down === 'sand' && neighbors.up !== 'sand');
+
+                                if (isVerticalTransition && isHorizontalTransition) {
+                                    // This is a corner case. We can simplify by just picking a corner tile.
+                                    tile = cornerTransitions[Math.floor(Math.random() * cornerTransitions.length)];
+                                } else if (isVerticalTransition) {
+                                    // Vertical transition
+                                    tile = verticalTransitions[Math.floor(Math.random() * verticalTransitions.length)];
+                                } else if (isHorizontalTransition) {
+                                    // Horizontal transition
+                                    tile = horizontalTransitions[Math.floor(Math.random() * horizontalTransitions.length)];
                                 } else {
+                                    // No transition, use a regular grass tile
                                     tile = grassTiles[Math.floor(Math.random() * grassTiles.length)];
                                 }
                             }
